@@ -30,7 +30,7 @@ export const myProvider = isTestEnvironment
 		})
 	: customProvider({
 			languageModels: {
-				"chat-model": anthropic("claude-3-haiku-20240307"),
+				"chat-model": anthropic("claude-4-sonnet-20250514"),
 				"chat-model-reasoning": wrapLanguageModel({
 					model: anthropic("claude-sonnet-4-20250514"),
 					middleware: extractReasoningMiddleware({

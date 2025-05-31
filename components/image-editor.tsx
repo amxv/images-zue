@@ -21,6 +21,7 @@ export function ImageEditor({
 	const [zoom, setZoom] = useState(1)
 	const [rotation, setRotation] = useState(0)
 	const [isFullscreen, setIsFullscreen] = useState(false)
+	const [imageError, setImageError] = useState(false)
 
 	const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.25, 3))
 	const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.25, 0.25))
@@ -53,6 +54,40 @@ export function ImageEditor({
 		)
 	}
 
+	// Show error state if no content or image failed to load
+	if (!content || content.trim() === "" || imageError) {
+		return (
+			<div
+				className={cn(
+					"flex flex-col items-center justify-center w-full",
+					{
+						"h-[calc(100dvh-60px)]": !isInline,
+						"h-[200px]": isInline
+					}
+				)}
+			>
+				<div className="flex flex-col gap-4 items-center text-center">
+					<div className="text-lg font-medium text-muted-foreground">
+						{imageError
+							? "Failed to load image"
+							: "No image content"}
+					</div>
+					<div className="text-sm text-muted-foreground">
+						{imageError
+							? "There was an error loading the generated image. Please try again."
+							: "The image content appears to be empty. Please try generating a new image."}
+					</div>
+					{process.env.NODE_ENV === "development" && (
+						<div className="text-xs text-muted-foreground font-mono">
+							Debug: content length = {content?.length || 0},
+							status = {status}
+						</div>
+					)}
+				</div>
+			</div>
+		)
+	}
+
 	return (
 		<div
 			className={cn("flex flex-col w-full", {
@@ -68,7 +103,7 @@ export function ImageEditor({
 						<button
 							type="button"
 							onClick={handleZoomOut}
-							className="p-2 hover:bg-muted rounded-md transition-colors"
+							className="p-2 hover:bg-muted rounded-3xl transition-colors"
 							disabled={zoom <= 0.25}
 						>
 							<ZoomOut size={16} />
@@ -79,7 +114,7 @@ export function ImageEditor({
 						<button
 							type="button"
 							onClick={handleZoomIn}
-							className="p-2 hover:bg-muted rounded-md transition-colors"
+							className="p-2 hover:bg-muted rounded-3xl transition-colors"
 							disabled={zoom >= 3}
 						>
 							<ZoomIn size={16} />
@@ -90,14 +125,14 @@ export function ImageEditor({
 						<button
 							type="button"
 							onClick={handleRotate}
-							className="p-2 hover:bg-muted rounded-md transition-colors"
+							className="p-2 hover:bg-muted rounded-3xl transition-colors"
 						>
 							<RotateCw size={16} />
 						</button>
 						<button
 							type="button"
 							onClick={handleFullscreen}
-							className="p-2 hover:bg-muted rounded-md transition-colors"
+							className="p-2 hover:bg-muted rounded-3xl transition-colors"
 						>
 							<Maximize2 size={16} />
 						</button>
@@ -124,7 +159,7 @@ export function ImageEditor({
 				>
 					<img
 						className={cn(
-							"max-w-full max-h-full object-contain rounded-lg shadow-lg",
+							"max-w-full max-h-full object-contain rounded-2xl shadow-lg",
 							{
 								"max-w-[800px] max-h-[600px]":
 									!isInline && !isFullscreen,
@@ -135,6 +170,20 @@ export function ImageEditor({
 						src={`data:image/png;base64,${content}`}
 						alt={title}
 						draggable={false}
+						onError={() => {
+							console.error("Image failed to load:", {
+								title,
+								contentLength: content?.length
+							})
+							setImageError(true)
+						}}
+						onLoad={() => {
+							console.log("Image loaded successfully:", {
+								title,
+								contentLength: content?.length
+							})
+							setImageError(false)
+						}}
 					/>
 				</div>
 			</div>
@@ -144,7 +193,7 @@ export function ImageEditor({
 				<button
 					type="button"
 					onClick={handleFullscreen}
-					className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 text-white rounded-md transition-colors"
+					className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 text-white rounded-3xl transition-colors"
 				>
 					<Minimize2 size={16} />
 				</button>

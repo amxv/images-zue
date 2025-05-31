@@ -1,15 +1,21 @@
 import { documentHandlersByArtifactKind } from "@/lib/artifacts/server"
 import { getDocumentById, saveDocument } from "@/lib/db/queries"
 import { type DataStreamWriter, tool } from "ai"
+import type { UIMessage } from "ai"
 import type { Session } from "next-auth"
 import { z } from "zod"
 
 interface UpdateDocumentProps {
 	session: Session
 	dataStream: DataStreamWriter
+	messages?: Array<UIMessage>
 }
 
-export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
+export const updateDocument = ({
+	session,
+	dataStream,
+	messages
+}: UpdateDocumentProps) =>
 	tool({
 		description: "Update a document with the given description.",
 		parameters: z.object({
@@ -47,7 +53,8 @@ export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
 				document,
 				description,
 				dataStream,
-				session
+				session,
+				messages: messages || []
 			})
 
 			dataStream.writeData({ type: "finish", content: "" })

@@ -137,6 +137,10 @@ function PureMultimodalInput({
 		formData.append("file", file)
 
 		try {
+			console.log(
+				`Uploading file: ${file.name}, type: ${file.type}, size: ${file.size}`
+			)
+
 			const response = await fetch("/api/files/upload", {
 				method: "POST",
 				body: formData
@@ -146,16 +150,28 @@ function PureMultimodalInput({
 				const data = await response.json()
 				const { url, pathname, contentType } = data
 
+				console.log(`Upload successful: ${url}`)
 				return {
 					url,
 					name: pathname,
 					contentType: contentType
 				}
 			}
-			const { error } = await response.json()
-			toast.error(error)
+
+			// Handle non-200 responses
+			const errorData = await response
+				.json()
+				.catch(() => ({ error: "Unknown error" }))
+			const errorMessage =
+				errorData.error ||
+				`Upload failed with status ${response.status}`
+			console.error(`Upload failed: ${errorMessage}`, errorData)
+			toast.error(errorMessage)
+			return null
 		} catch (error) {
+			console.error("Upload error:", error)
 			toast.error("Failed to upload file, please try again!")
+			return null
 		}
 	}, [])
 
@@ -170,7 +186,10 @@ function PureMultimodalInput({
 				const uploadedAttachments = await Promise.all(uploadPromises)
 				const successfullyUploadedAttachments =
 					uploadedAttachments.filter(
-						(attachment) => attachment !== undefined
+						(
+							attachment
+						): attachment is NonNullable<typeof attachment> =>
+							attachment !== null && attachment !== undefined
 					)
 
 				setAttachments((currentAttachments) => [
@@ -349,7 +368,7 @@ function PureAttachmentsButton({
 	return (
 		<Button
 			data-testid="attachments-button"
-			className="rounded-md rounded-bl-lg p-[7px] h-fit dark:border-zinc-700 dark:hover:bg-zinc-900 hover:bg-zinc-200"
+			className="rounded-3xl rounded-bl-lg p-[7px] h-fit dark:border-zinc-700 dark:hover:bg-zinc-900 hover:bg-zinc-200"
 			onClick={(event) => {
 				event.preventDefault()
 				fileInputRef.current?.click()

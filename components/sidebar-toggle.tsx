@@ -1,4 +1,5 @@
 import type { ComponentProps } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import { type SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import {
@@ -7,13 +8,12 @@ import {
 	TooltipTrigger
 } from "@/components/ui/tooltip"
 
-import { SidebarLeftIcon } from "./icons"
 import { Button } from "./ui/button"
 
 export function SidebarToggle({
 	className
 }: ComponentProps<typeof SidebarTrigger>) {
-	const { toggleSidebar } = useSidebar()
+	const { toggleSidebar, open } = useSidebar()
 
 	return (
 		<Tooltip>
@@ -24,7 +24,11 @@ export function SidebarToggle({
 					variant="outline"
 					className="md:px-2 md:h-fit"
 				>
-					<SidebarLeftIcon size={16} />
+					{open ? (
+						<ChevronLeft size={16} />
+					) : (
+						<ChevronRight size={16} />
+					)}
 				</Button>
 			</TooltipTrigger>
 			<TooltipContent align="start">Toggle Sidebar</TooltipContent>

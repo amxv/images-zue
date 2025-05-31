@@ -3,7 +3,7 @@ import { imageDocumentHandler } from "@/artifacts/image/server"
 import { sheetDocumentHandler } from "@/artifacts/sheet/server"
 import { textDocumentHandler } from "@/artifacts/text/server"
 import type { ArtifactKind } from "@/components/artifact"
-import type { DataStreamWriter } from "ai"
+import type { DataStreamWriter, UIMessage } from "ai"
 import type { Session } from "next-auth"
 import { saveDocument } from "../db/queries"
 import type { Document } from "../db/schema"
@@ -21,6 +21,7 @@ export interface CreateDocumentCallbackProps {
 	title: string
 	dataStream: DataStreamWriter
 	session: Session
+	messages?: Array<UIMessage>
 }
 
 export interface UpdateDocumentCallbackProps {
@@ -28,6 +29,7 @@ export interface UpdateDocumentCallbackProps {
 	description: string
 	dataStream: DataStreamWriter
 	session: Session
+	messages?: Array<UIMessage>
 }
 
 export interface DocumentHandler<T = ArtifactKind> {
@@ -48,7 +50,8 @@ export function createDocumentHandler<T extends ArtifactKind>(config: {
 				id: args.id,
 				title: args.title,
 				dataStream: args.dataStream,
-				session: args.session
+				session: args.session,
+				messages: args.messages
 			})
 
 			if (args.session?.user?.id) {
@@ -68,7 +71,8 @@ export function createDocumentHandler<T extends ArtifactKind>(config: {
 				document: args.document,
 				description: args.description,
 				dataStream: args.dataStream,
-				session: args.session
+				session: args.session,
+				messages: args.messages
 			})
 
 			if (args.session?.user?.id) {

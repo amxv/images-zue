@@ -134,7 +134,7 @@ const Tool = ({
 			<TooltipContent
 				side="left"
 				sideOffset={16}
-				className="bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 rounded-xl p-3 px-4 border-0 shadow-xl"
+				className="bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 rounded-3xl p-3 px-4 border-0 shadow-xl"
 			>
 				{description}
 			</TooltipContent>

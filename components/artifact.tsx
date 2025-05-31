@@ -449,7 +449,7 @@ function PureArtifact({
 											)}`}
 										</div>
 									) : (
-										<div className="w-32 h-3 mt-2 bg-muted-foreground/20 rounded-md animate-pulse" />
+										<div className="w-32 h-3 mt-2 bg-muted-foreground/20 rounded-3xl animate-pulse" />
 									)}
 								</div>
 							</div>

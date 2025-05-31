@@ -8,7 +8,9 @@ import {
 	Image,
 	Download,
 	Edit,
-	Sparkles
+	Sparkles,
+	Upload,
+	Link
 } from "lucide-react"
 import { ImageEditor } from "@/components/image-editor"
 import { toast } from "sonner"
@@ -17,25 +19,38 @@ interface ImageArtifactMetadata {
 	originalPrompt: string
 	aspectRatio: string
 	style: string
+	generationType?: "text-to-image" | "image-to-image"
+	hasInputImage?: boolean
+	inputImageUrl?: string
 }
 
 export const imageArtifact = new Artifact<"image", ImageArtifactMetadata>({
 	kind: "image",
-	description: "Useful for image generation and editing",
+	description:
+		"Useful for image generation and editing. Supports both text-to-image and image-to-image generation. You can upload images as attachments or include image URLs in your prompt for image-to-image transformations.",
 	initialize: async ({ setMetadata }) => {
 		setMetadata({
 			originalPrompt: "",
 			aspectRatio: "1:1",
-			style: "realistic"
+			style: "realistic",
+			generationType: "text-to-image",
+			hasInputImage: false
 		})
 	},
 	onStreamPart: ({ streamPart, setArtifact }) => {
 		if (streamPart.type === "image-delta") {
+			console.log("Image stream part received:", {
+				type: streamPart.type,
+				contentLength: (streamPart.content as string)?.length || 0,
+				contentPreview:
+					(streamPart.content as string)?.substring(0, 50) + "..."
+			})
+
 			setArtifact((draftArtifact) => ({
 				...draftArtifact,
 				content: streamPart.content as string,
 				isVisible: true,
-				status: "streaming"
+				status: "idle"
 			}))
 		}
 	},
@@ -153,6 +168,28 @@ export const imageArtifact = new Artifact<"image", ImageArtifactMetadata>({
 					role: "user",
 					content:
 						"Please modify this image. What changes would you like me to make?"
+				})
+			}
+		},
+		{
+			icon: <Upload />,
+			description: "Upload image to edit",
+			onClick: ({ appendMessage }) => {
+				appendMessage({
+					role: "user",
+					content:
+						"To edit an image, you can:\n\n1. Upload an image file using the attachment button (📎)\n2. Then describe the changes you want to make\n\nExample: Upload a photo and say 'Make this image more vibrant and add dramatic lighting'"
+				})
+			}
+		},
+		{
+			icon: <Link />,
+			description: "Image-to-image guide",
+			onClick: ({ appendMessage }) => {
+				appendMessage({
+					role: "user",
+					content:
+						"Here's how to use image-to-image generation:\n\n**Method 1: Upload files**\n1. Click the attachment button (📎) to upload an image\n2. Add your modification instructions in the text\n\n**Method 2: Use URLs**\n1. Include an image URL in your prompt\n2. Add your modification instructions\n\nExample:\nhttps://example.com/photo.jpg\nConvert this to a watercolor painting style"
 				})
 			}
 		},

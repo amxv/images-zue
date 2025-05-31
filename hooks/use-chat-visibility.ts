@@ -4,7 +4,7 @@ import { updateChatVisibility } from "@/app/(chat)/actions"
 import {
 	type ChatHistory,
 	getChatHistoryPaginationKey
-} from "@/components/sidebar-history"
+} from "@/components/app-sidebar"
 import type { VisibilityType } from "@/components/visibility-selector"
 import { useMemo } from "react"
 import useSWR, { useSWRConfig } from "swr"

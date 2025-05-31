@@ -26,7 +26,8 @@ import {
 	appendResponseMessages,
 	createDataStream,
 	smoothStream,
-	streamText
+	streamText,
+	type UIMessage
 } from "ai"
 import { differenceInSeconds } from "date-fns"
 import { after } from "next/server"
@@ -151,21 +152,26 @@ export async function POST(request: Request) {
 					system: systemPrompt({ selectedChatModel, requestHints }),
 					messages,
 					maxSteps: 5,
-					experimental_activeTools:
-						selectedChatModel === "chat-model-reasoning"
-							? []
-							: [
-									"getWeather",
-									"createDocument",
-									"updateDocument",
-									"requestSuggestions"
-								],
+					experimental_activeTools: [
+						"getWeather",
+						"createDocument",
+						"updateDocument",
+						"requestSuggestions"
+					],
 					experimental_transform: smoothStream({ chunking: "word" }),
 					experimental_generateMessageId: generateUUID,
 					tools: {
 						getWeather,
-						createDocument: createDocument({ session, dataStream }),
-						updateDocument: updateDocument({ session, dataStream }),
+						createDocument: createDocument({
+							session,
+							dataStream,
+							messages: messages as UIMessage[]
+						}),
+						updateDocument: updateDocument({
+							session,
+							dataStream,
+							messages: messages as UIMessage[]
+						}),
 						requestSuggestions: requestSuggestions({
 							session,
 							dataStream

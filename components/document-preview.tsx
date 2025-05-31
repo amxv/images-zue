@@ -138,9 +138,9 @@ const LoadingSkeleton = ({ artifactKind }: { artifactKind: ArtifactKind }) => (
 		<div className="p-4 border rounded-t-2xl flex flex-row gap-2 items-center justify-between dark:bg-muted h-[57px] dark:border-zinc-700 border-b-0">
 			<div className="flex flex-row items-center gap-3">
 				<div className="text-muted-foreground">
-					<div className="animate-pulse rounded-md size-4 bg-muted-foreground/20" />
+					<div className="animate-pulse rounded-3xl size-4 bg-muted-foreground/20" />
 				</div>
-				<div className="animate-pulse rounded-lg h-4 bg-muted-foreground/20 w-24" />
+				<div className="animate-pulse rounded-2xl h-4 bg-muted-foreground/20 w-24" />
 			</div>
 			<div>
 				<FullscreenIcon />
@@ -200,7 +200,7 @@ const PureHitboxLayer = ({
 
 	return (
 		<div
-			className="size-full absolute top-0 left-0 rounded-xl z-10"
+			className="size-full absolute top-0 left-0 rounded-3xl z-10"
 			ref={hitboxRef}
 			onClick={handleClick}
 			onKeyDown={(e) => {
@@ -219,7 +219,7 @@ const PureHitboxLayer = ({
 			tabIndex={0}
 		>
 			<div className="w-full p-4 flex justify-end items-center">
-				<div className="absolute right-[9px] top-[13px] p-2 dark:hover:bg-zinc-700 rounded-md hover:bg-zinc-100">
+				<div className="absolute right-[9px] top-[13px] p-2 dark:hover:bg-zinc-700 rounded-3xl hover:bg-zinc-100">
 					<FullscreenIcon />
 				</div>
 			</div>

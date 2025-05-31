@@ -168,7 +168,7 @@ export function Console({ consoleOutputs, setConsoleOutputs }: ConsoleProps) {
 													<img
 														src={content.value}
 														alt="output"
-														className="rounded-md max-w-(--breakpoint-toast-mobile) w-full"
+														className="rounded-3xl max-w-(--breakpoint-toast-mobile) w-full"
 													/>
 												</picture>
 											) : (

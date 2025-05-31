@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils"
 import { entitlementsByUserType } from "@/lib/ai/entitlements"
 import type { Session } from "next-auth"
 import { CheckCircleFillIcon, ChevronDownIcon } from "./icons"
+import { BrainIcon } from "./brain-icon"
 
 export function ModelSelector({
 	session,
@@ -58,6 +59,7 @@ export function ModelSelector({
 					variant="outline"
 					className="md:px-2 md:h-[34px]"
 				>
+					<BrainIcon size={12} />
 					{selectedChatModel?.name}
 					<ChevronDownIcon />
 				</Button>
