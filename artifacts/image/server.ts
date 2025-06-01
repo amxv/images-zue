@@ -49,46 +49,49 @@ const extractBase64ImageFromText = (text: string): string | null => {
 const parseImageInput = (
 	input: string,
 	attachments?: Array<Attachment>
-): { prompt: string; imageUrl: string | null } => {
-	// First, check for image attachments (prioritize over text-embedded URLs)
-	let imageUrl: string | null = null
+): { prompt: string; imageUrls: string[] } => {
+	// Collect all image URLs from attachments and text
+	let imageUrls: string[] = []
 
+	// First, check for image attachments (prioritize over text-embedded URLs)
 	if (attachments && attachments.length > 0) {
-		// Find the first image attachment
-		const imageAttachment = attachments.find((attachment) =>
+		// Find all image attachments
+		const imageAttachments = attachments.filter((attachment) =>
 			attachment.contentType?.startsWith("image/")
 		)
-		if (imageAttachment) {
-			imageUrl = imageAttachment.url
-		}
+		imageUrls.push(...imageAttachments.map((attachment) => attachment.url))
 	}
 
-	// If no attachment found, look for URLs or base64 data in text
-	if (!imageUrl) {
-		imageUrl =
+	// If no attachments found, look for URLs or base64 data in text
+	if (imageUrls.length === 0) {
+		const imageUrl =
 			extractImageUrlFromText(input) || extractBase64ImageFromText(input)
+		if (imageUrl) {
+			imageUrls.push(imageUrl)
+		}
 	}
 
 	// Remove the image URL/data from the prompt to get clean text (only if it was embedded in text)
 	let prompt = input
 	if (
-		imageUrl &&
+		imageUrls.length === 1 &&
 		(extractImageUrlFromText(input) || extractBase64ImageFromText(input))
 	) {
-		prompt = input.replace(imageUrl, "").trim()
+		prompt = input.replace(imageUrls[0], "").trim()
 		// Clean up any leftover formatting
 		prompt = prompt.replace(/^\s*[-•*]\s*/, "").trim()
 		prompt = prompt.replace(/^(image|img|picture|photo):\s*/i, "").trim()
 	}
 
-	return { prompt, imageUrl }
+	return { prompt, imageUrls }
 }
 
 const getOptimalImageModel = (
 	selectedImageModelId: string,
-	hasInputImage: boolean,
+	hasInputImages: boolean,
 	isFirstGeneration: boolean = false,
-	hasExistingImageArtifact: boolean = false
+	hasExistingImageArtifact: boolean = false,
+	inputImageCount: number = 0
 ): string => {
 	// For the new model structure, users explicitly select T2I or I2I models
 	// We should respect their choice and only fall back if there's a capability mismatch
@@ -104,9 +107,15 @@ const getOptimalImageModel = (
 		return DEFAULT_IMAGE_MODEL
 	}
 
+	// PRIORITY 0: Respect user's explicit multi-image model selection
+	// Only use multi-image models when explicitly selected by the user
+	if (selectedModel.capabilities.multiImage) {
+		return selectedImageModelId
+	}
+
 	// PRIORITY 1: Handle input image cases (including first-time generations with uploaded images)
 	// If user has an input image but selected a T2I-only model, map to I2I equivalent
-	if (hasInputImage && !selectedModel.capabilities.imageToImage) {
+	if (hasInputImages && !selectedModel.capabilities.imageToImage) {
 		// User selected a T2I model but has an input image (including first-time with upload)
 		// Map to the corresponding I2I model
 		if (selectedImageModelId === IMAGE_MODEL_IDS.FLUX_KONTEXT_T2I) {
@@ -142,7 +151,7 @@ const getOptimalImageModel = (
 	// but user selected a T2I model, map to the corresponding I2I model for editing
 	if (
 		hasExistingImageArtifact &&
-		!hasInputImage &&
+		!hasInputImages &&
 		selectedModel.capabilities.textToImage &&
 		!selectedModel.capabilities.imageToImage
 	) {
@@ -170,7 +179,7 @@ const getOptimalImageModel = (
 	}
 
 	// PRIORITY 3: Handle I2I model selected but no input image
-	if (!hasInputImage && !selectedModel.capabilities.textToImage) {
+	if (!hasInputImages && !selectedModel.capabilities.textToImage) {
 		// User selected an I2I model but has no input image
 		// Find a similar T2I model or fallback to a default T2I model
 		if (selectedImageModelId === IMAGE_MODEL_IDS.FLUX_KONTEXT_I2I) {
@@ -195,7 +204,7 @@ const getOptimalImageModel = (
 
 	// Legacy support for old model IDs
 	if (selectedImageModelId === IMAGE_MODEL_IDS.FLUX_PRO_FIRST_TIME) {
-		return hasInputImage
+		return hasInputImages
 			? IMAGE_MODEL_IDS.FLUX_KONTEXT_I2I
 			: IMAGE_MODEL_IDS.FLUX_KONTEXT_T2I
 	}
@@ -241,7 +250,7 @@ const isFirstImageGenerationInConversation = (
 	return true // No previous image generations found
 }
 
-const getFalModelName = (modelId: string, hasInputImage: boolean): string => {
+const getFalModelName = (modelId: string): string => {
 	// Handle the new model IDs
 	if (modelId === IMAGE_MODEL_IDS.FLUX_KONTEXT_T2I) {
 		return "fal-ai/flux-pro/kontext/text-to-image"
@@ -276,8 +285,8 @@ const getFalModelName = (modelId: string, hasInputImage: boolean): string => {
 	if (modelId === IMAGE_MODEL_IDS.IDEOGRAM_V3_REMIX) {
 		return "fal-ai/ideogram/v3/remix"
 	}
-	if (modelId === IMAGE_MODEL_IDS.IDEOGRAM_V3_REMIX) {
-		return "fal-ai/ideogram/v3/remix"
+	if (modelId === IMAGE_MODEL_IDS.FLUX_KONTEXT_MAX_MULTI) {
+		return "fal-ai/flux-pro/kontext/max/multi"
 	}
 
 	// Legacy model handling
@@ -333,6 +342,23 @@ const getLatestImageArtifactFromConversation = (
 	return null
 }
 
+const filterImagesForModel = (
+	allImages: string[],
+	selectedModel: { capabilities?: { multiImage?: boolean } } | undefined
+): string[] => {
+	// If it's a multi-image model, return all images
+	if (selectedModel?.capabilities?.multiImage) {
+		return allImages
+	}
+
+	// For regular I2I models, return only the last image
+	if (allImages.length > 1) {
+		return [allImages[allImages.length - 1]]
+	}
+
+	return allImages
+}
+
 export const imageDocumentHandler = createDocumentHandler<"image">({
 	kind: "image",
 	onCreateDocument: async ({
@@ -362,14 +388,14 @@ export const imageDocumentHandler = createDocumentHandler<"image">({
 					: null
 			const attachments = latestMessage?.experimental_attachments || []
 
-			// Parse the title to extract image URL and text prompt
-			const { prompt: textPrompt, imageUrl: inputImage } =
+			// Parse the title to extract image URLs and text prompt
+			const { prompt: textPrompt, imageUrls: inputImages } =
 				parseImageInput(title, attachments)
 
-			// If there's no direct input image but there's an existing image artifact,
+			// If there's no direct input images but there's an existing image artifact,
 			// use the latest image artifact as the base image for editing
 			let baseImageForEditing: string | null = null
-			if (!inputImage && hasExistingImageArtifact) {
+			if (inputImages.length === 0 && hasExistingImageArtifact) {
 				baseImageForEditing = getLatestImageArtifactFromConversation(
 					messages || []
 				)
@@ -388,9 +414,10 @@ export const imageDocumentHandler = createDocumentHandler<"image">({
 
 			const optimalModelId = getOptimalImageModel(
 				modelToUse,
-				!!(inputImage || baseImageForEditing),
+				!!(inputImages.length > 0 || baseImageForEditing),
 				isFirstGeneration,
-				hasExistingImageArtifact
+				hasExistingImageArtifact,
+				inputImages.length + (baseImageForEditing ? 1 : 0)
 			)
 			const modelParams = getModelParameters(optimalModelId)
 
@@ -415,11 +442,27 @@ export const imageDocumentHandler = createDocumentHandler<"image">({
 				size: modelParams.maxSize as "1024x1024"
 			}
 
-			// Add image-to-image specific parameters if we have an input image or base image for editing
-			const imageToUse = inputImage || baseImageForEditing
-			if (imageToUse) {
-				const falOptions: Record<string, string | number | boolean> = {
-					image_url: imageToUse,
+			// Add image-to-image specific parameters if we have input images or base image for editing
+			const allImages = [
+				...inputImages,
+				...(baseImageForEditing ? [baseImageForEditing] : [])
+			]
+
+			// Filter images based on model capabilities
+			const selectedModel = imageModels.find(
+				(m) => m.id === optimalModelId
+			)
+			const imagesToUse = filterImagesForModel(allImages, selectedModel)
+
+			if (imagesToUse.length > 0) {
+				const falOptions: Record<
+					string,
+					string | number | boolean | string[]
+				> = {
+					// Use image_urls for multiple images, image_url for single image (backward compatibility)
+					...(imagesToUse.length > 1
+						? { image_urls: imagesToUse }
+						: { image_url: imagesToUse[0] }),
 					num_inference_steps: modelParams.inferenceSteps,
 					sync_mode: true,
 					// Strength controls how much the input image influences the output
@@ -443,7 +486,10 @@ export const imageDocumentHandler = createDocumentHandler<"image">({
 
 				generateParams.providerOptions = { fal: falOptions }
 			} else {
-				const falOptions: Record<string, string | number | boolean> = {
+				const falOptions: Record<
+					string,
+					string | number | boolean | string[]
+				> = {
 					num_inference_steps: modelParams.inferenceSteps,
 					sync_mode: true
 				}
@@ -499,13 +545,15 @@ export const imageDocumentHandler = createDocumentHandler<"image">({
 					: null
 			const attachments = latestMessage?.experimental_attachments || []
 
-			// Parse the description to extract any new image URL and text prompt
-			const { prompt: textPrompt, imageUrl: newInputImage } =
+			// Parse the description to extract any new image URLs and text prompt
+			const { prompt: textPrompt, imageUrls: newInputImages } =
 				parseImageInput(description, attachments)
 
-			// Use the new input image if provided, otherwise use the existing document content as base
-			const baseImage =
-				newInputImage || `data:image/png;base64,${document.content}`
+			// Use the new input images if provided, otherwise use the existing document content as base
+			const allImages =
+				newInputImages.length > 0
+					? newInputImages
+					: [`data:image/png;base64,${document.content}`]
 			const promptToUse = textPrompt || description
 			const enhancedPrompt = enhanceImagePrompt(promptToUse)
 
@@ -517,9 +565,16 @@ export const imageDocumentHandler = createDocumentHandler<"image">({
 				modelToUse,
 				true, // Always true for updates since we have a base image
 				false, // Never first generation for updates
-				true // Always true for updates since we're updating an existing image artifact
+				true, // Always true for updates since we're updating an existing image artifact
+				allImages.length
 			)
 			const modelParams = getModelParameters(optimalModelId)
+
+			// Filter images based on model capabilities
+			const selectedModel = imageModels.find(
+				(m) => m.id === optimalModelId
+			)
+			const imagesToUse = filterImagesForModel(allImages, selectedModel)
 
 			// Use user-selected parameters with fallback to model defaults
 			const guidanceScale =
@@ -533,11 +588,17 @@ export const imageDocumentHandler = createDocumentHandler<"image">({
 				aspectRatio
 			)
 
-			const falOptions: Record<string, string | number | boolean> = {
-				image_url: baseImage,
+			const falOptions: Record<
+				string,
+				string | number | boolean | string[]
+			> = {
+				// Use image_urls for multiple images, image_url for single image (backward compatibility)
+				...(imagesToUse.length > 1
+					? { image_urls: imagesToUse }
+					: { image_url: imagesToUse[0] }),
 				num_inference_steps: modelParams.inferenceSteps,
 				sync_mode: true,
-				// Adjust strength based on whether we have a new input image
+				// Adjust strength based on whether we have a new input images
 				// Higher strength for new images, lower for modifications
 				strength: 0.8
 			}

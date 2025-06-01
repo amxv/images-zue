@@ -344,6 +344,7 @@ function PureArtifact({
 										selectedVisibilityType={
 											selectedVisibilityType
 										}
+										isArtifactVisible={true}
 									/>
 								</form>
 							</div>

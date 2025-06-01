@@ -6,9 +6,10 @@ The image artifact now supports both **text-to-image** and **image-to-image** ge
 
 - **Text-to-Image Generation**: Create images from text descriptions
 - **Image-to-Image Generation**: Transform existing images using text prompts
-- **File Upload Support**: Upload images directly through the chat interface
+- **Multi-Image Generation**: Process multiple images simultaneously for enhanced context understanding
+- **File Upload Support**: Upload single or multiple images directly through the chat interface
 - **URL Support**: Use image URLs in prompts for transformations
-- **Automatic Model Selection**: Intelligently chooses the best model based on input type
+- **Automatic Model Selection**: Intelligently chooses the best model based on input type and number of images
 - **Quality Enhancement**: Automatically adds quality terms to prompts
 - **Multiple Image Formats**: Supports JPG, PNG, GIF, WebP, and BMP
 
@@ -27,13 +28,19 @@ Create a serene mountain landscape at sunset with vibrant colors
 #### Method 1: File Upload (Recommended)
 
 1. Click the attachment button (📎) in the chat interface
-2. Upload your image file
+2. Upload one or multiple image files
 3. Add your modification instructions in the text field
 
-Example:
+Example (Single Image):
 
 ```
 Make this image more vibrant and add dramatic lighting
+```
+
+Example (Multiple Images):
+
+```
+Combine these images into a single composition with a cohesive artistic style
 ```
 
 #### Method 2: Image URLs
@@ -60,8 +67,9 @@ Make this image more vibrant and add dramatic lighting
 
 ## Model Selection
 
-- **Text-to-Image**: Uses `fal-ai/flux-pro/kontext/text-to-image` for pure text prompts
-- **Image-to-Image**: Uses `fal-ai/flux-pro/kontext` for image transformation tasks
+- **Text-to-Image**: Uses selected T2I model (e.g., `fal-ai/flux-pro/kontext/text-to-image`) for pure text prompts
+- **Image-to-Image**: Uses selected I2I model (e.g., `fal-ai/flux-pro/kontext`) for single image transformation tasks
+- **Multi-Image**: Automatically uses `fal-ai/flux-pro/kontext/max/multi` when multiple images are detected for enhanced context understanding
 
 ## Parameters
 
@@ -102,6 +110,16 @@ Enhance this landscape with better lighting and more vivid colors
 
 1. Upload a room photo
 2. Type: `Add a large bookshelf to the left wall of this room`
+
+### Multi-Image Composition
+
+1. Upload multiple related images (e.g., different angles of the same subject)
+2. Type: `Create a panoramic composition from these images with seamless blending`
+
+### Style Transfer with Multiple References
+
+1. Upload a content image and one or more style reference images
+2. Type: `Apply the artistic style from the reference images to the main content`
 
 ## Tips for Better Results
 

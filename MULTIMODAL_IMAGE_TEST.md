@@ -73,7 +73,25 @@ This document provides a comprehensive test plan to verify that the multimodal i
 - Clean prompt should be used for generation
 - Image-to-image model should be selected automatically
 
-### Test 4: Error Handling
+### Test 4: Multi-Image Generation
+
+**Objective:** Verify that multiple images are processed correctly and automatically switch to multi-image model.
+
+**Steps:**
+
+1. Click the attachment button (📎)
+2. Upload multiple image files (2-3 images)
+3. Type: "Combine these images into a single artistic composition with cohesive style"
+4. Send the message
+
+**Expected Results:**
+
+- All uploaded images should be processed
+- System should automatically select the multi-image model (`fal-ai/flux-pro/kontext/max/multi`)
+- Generated image should incorporate elements from all input images
+- Console should show `image_urls` parameter being used instead of `image_url`
+
+### Test 5: Error Handling
 
 **Objective:** Verify that error states are handled gracefully.
 
@@ -89,7 +107,7 @@ This document provides a comprehensive test plan to verify that the multimodal i
 - No blank screens or crashes
 - User should be guided on how to fix the issue
 
-### Test 5: Artifact Interaction
+### Test 6: Artifact Interaction
 
 **Objective:** Verify that artifact actions work correctly.
 

@@ -34,7 +34,7 @@ interface ImageArtifactMetadata {
 export const imageArtifact = new Artifact<"image", ImageArtifactMetadata>({
 	kind: "image",
 	description:
-		"Useful for image generation and editing. Supports both text-to-image and image-to-image generation. You can upload images as attachments or include image URLs in your prompt for image-to-image transformations.",
+		"Useful for image generation and editing. Supports text-to-image, image-to-image, and multi-image generation. You can upload multiple images as attachments or include image URLs in your prompt for advanced image transformations. When multiple images are uploaded, the system automatically switches to a multi-image model for enhanced context understanding.",
 	initialize: async ({ setMetadata }) => {
 		setMetadata({
 			originalPrompt: "",

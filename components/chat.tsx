@@ -14,6 +14,7 @@ import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import useSWR, { useSWRConfig } from "swr"
 import { unstable_serialize } from "swr/infinite"
+import { useLocalStorage } from "usehooks-ts"
 import { Artifact } from "./artifact"
 import { Messages } from "./messages"
 import { MultimodalInput } from "./multimodal-input"
@@ -115,8 +116,25 @@ export function Chat({
 		fetcher
 	)
 
-	const [attachments, setAttachments] = useState<Array<Attachment>>([])
+	const [localStorageAttachments, setLocalStorageAttachments] =
+		useLocalStorage<Array<Attachment>>(`attachments-${id}`, [])
+
+	// Initialize attachments from localStorage, then use regular state
+	const [attachments, setAttachments] = useState<Array<Attachment>>(
+		localStorageAttachments
+	)
 	const isArtifactVisible = useArtifactSelector((state) => state.isVisible)
+
+	// Persist attachments to localStorage whenever they change
+	useEffect(() => {
+		setLocalStorageAttachments(attachments)
+	}, [attachments, setLocalStorageAttachments])
+
+	// Handle clearing attachments on message submit
+	const handleClearAttachments = () => {
+		setAttachments([])
+		setLocalStorageAttachments([])
+	}
 
 	useAutoResume({
 		autoResume,
@@ -183,6 +201,8 @@ export function Chat({
 							setMessages={setMessages}
 							append={append}
 							selectedVisibilityType={visibilityType}
+							onClearAttachments={handleClearAttachments}
+							isArtifactVisible={isArtifactVisible}
 						/>
 					)}
 				</form>

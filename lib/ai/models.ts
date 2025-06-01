@@ -29,6 +29,10 @@ export const IMAGE_MODEL_IDS = {
 	RECRAFT_V3_I2I: "recraft-v3-i2i",
 	IDEOGRAM_V3_REMIX: "ideogram-v3-remix",
 
+	// Multi-Image Models
+	// Note: Automatically selected when multiple images are detected in the chat context
+	FLUX_KONTEXT_MAX_MULTI: "flux-kontext-max-multi",
+
 	// Backend models - these are used internally for automatic selection (legacy)
 	FLUX_PRO_FIRST_TIME: "flux-pro-first-time",
 	FLUX_PRO_TEXT_TO_IMAGE: "flux-pro-text-to-image",
@@ -76,6 +80,7 @@ export interface ImageModel {
 	capabilities: {
 		textToImage: boolean
 		imageToImage: boolean
+		multiImage?: boolean // New capability for multi-image processing
 	}
 	parameters: {
 		maxSize: string
@@ -353,6 +358,31 @@ export const imageModels: Array<ImageModel> = [
 		}
 	},
 
+	// Multi-Image Models
+	{
+		id: IMAGE_MODEL_IDS.FLUX_KONTEXT_MAX_MULTI,
+		name: "FLUX Kontext Max Multi",
+		description:
+			"Advanced multi-image processing with enhanced context understanding",
+		provider: "fal",
+		capabilities: {
+			textToImage: true,
+			imageToImage: true,
+			multiImage: true
+		},
+		parameters: {
+			maxSize: "1024x1024",
+			guidanceScale: 10,
+			inferenceSteps: 50
+		},
+		aspectRatio: {
+			parameterName: "aspect_ratio",
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
+			defaultRatio: "1:1",
+			formatType: "flux"
+		}
+	},
+
 	// Backend models - not shown to users but used internally (legacy)
 	{
 		id: IMAGE_MODEL_IDS.FLUX_PRO_FIRST_TIME,
@@ -479,7 +509,9 @@ export const USER_SELECTABLE_IMAGE_MODEL_IDS = [
 	IMAGE_MODEL_IDS.FLUX_KONTEXT_I2I,
 	IMAGE_MODEL_IDS.FLUX_KONTEXT_MAX_I2I,
 	IMAGE_MODEL_IDS.RECRAFT_V3_I2I,
-	IMAGE_MODEL_IDS.IDEOGRAM_V3_REMIX
+	IMAGE_MODEL_IDS.IDEOGRAM_V3_REMIX,
+	// Multi-Image Models
+	IMAGE_MODEL_IDS.FLUX_KONTEXT_MAX_MULTI
 ]
 
 export const DEFAULT_CHAT_MODEL: string = MODEL_IDS.CLAUDE_SONNET_4

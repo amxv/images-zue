@@ -112,6 +112,13 @@ const groupChatsByDate = (chats: Chat[]): GroupedChats => {
 	)
 }
 
+const filterChatsBySearch = (chats: Chat[], searchQuery: string): Chat[] => {
+	if (!searchQuery.trim()) return chats
+
+	const query = searchQuery.toLowerCase().trim()
+	return chats.filter((chat) => chat.title.toLowerCase().includes(query))
+}
+
 export function getChatHistoryPaginationKey(
 	pageIndex: number,
 	previousPageData: ChatHistory
@@ -149,6 +156,7 @@ export function AppSidebar({
 
 	const [deleteId, setDeleteId] = useState<string | null>(null)
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+	const [searchQuery, setSearchQuery] = useState("")
 
 	const hasReachedEnd = paginatedChatHistories
 		? paginatedChatHistories.some((page) => page.hasMore === false)
@@ -193,7 +201,14 @@ export function AppSidebar({
 		<>
 			<Sidebar {...props}>
 				<SidebarHeader className="gap-3.5 border-b p-4">
-					<SidebarInput placeholder="Search" />
+					<div className="relative">
+						<SidebarInput
+							placeholder="Search"
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							className="pl-4"
+						/>
+					</div>
 				</SidebarHeader>
 				<SidebarContent>
 					<SidebarGroup className="px-0">
@@ -238,10 +253,28 @@ export function AppSidebar({
 														paginatedChatHistory.chats
 												)
 
-											const groupedChats =
-												groupChatsByDate(
-													chatsFromHistory
+											// Filter chats based on search query
+											const filteredChats =
+												filterChatsBySearch(
+													chatsFromHistory,
+													searchQuery
 												)
+
+											// If searching and no results found
+											if (
+												searchQuery.trim() &&
+												filteredChats.length === 0
+											) {
+												return (
+													<div className="p-4 text-center text-sm text-muted-foreground">
+														No chats found matching
+														"{searchQuery}"
+													</div>
+												)
+											}
+
+											const groupedChats =
+												groupChatsByDate(filteredChats)
 
 											return (
 												<div className="flex flex-col">
@@ -278,6 +311,9 @@ export function AppSidebar({
 																			setOpen(
 																				false
 																			)
+																		}
+																		searchQuery={
+																			searchQuery
 																		}
 																	/>
 																)
@@ -319,6 +355,9 @@ export function AppSidebar({
 																				false
 																			)
 																		}
+																		searchQuery={
+																			searchQuery
+																		}
 																	/>
 																)
 															)}
@@ -358,6 +397,9 @@ export function AppSidebar({
 																			setOpen(
 																				false
 																			)
+																		}
+																		searchQuery={
+																			searchQuery
 																		}
 																	/>
 																)
@@ -399,6 +441,9 @@ export function AppSidebar({
 																				false
 																			)
 																		}
+																		searchQuery={
+																			searchQuery
+																		}
 																	/>
 																)
 															)}
@@ -439,6 +484,9 @@ export function AppSidebar({
 																				false
 																			)
 																		}
+																		searchQuery={
+																			searchQuery
+																		}
 																	/>
 																)
 															)}
@@ -448,26 +496,32 @@ export function AppSidebar({
 											)
 										})()}
 
-									<motion.div
-										onViewportEnter={() => {
-											if (
-												!isValidating &&
-												!hasReachedEnd
-											) {
-												setSize((size) => size + 1)
-											}
-										}}
-									/>
+									{!searchQuery.trim() && (
+										<>
+											<motion.div
+												onViewportEnter={() => {
+													if (
+														!isValidating &&
+														!hasReachedEnd
+													) {
+														setSize(
+															(size) => size + 1
+														)
+													}
+												}}
+											/>
 
-									{hasReachedEnd ? (
-										<div className="p-4 text-center text-xs text-muted-foreground">
-											You have reached the end of your
-											chat history.
-										</div>
-									) : (
-										<div className="p-4 text-center text-xs text-muted-foreground">
-											Loading more chats...
-										</div>
+											{hasReachedEnd ? (
+												<div className="p-4 text-center text-xs text-muted-foreground">
+													You have reached the end of
+													your chat history.
+												</div>
+											) : (
+												<div className="p-4 text-center text-xs text-muted-foreground">
+													Loading more chats...
+												</div>
+											)}
+										</>
 									)}
 								</>
 							)}
@@ -506,12 +560,14 @@ function ChatItem({
 	chat,
 	isActive,
 	onDelete,
-	setOpenMobile
+	setOpenMobile,
+	searchQuery
 }: {
 	chat: Chat
 	isActive: boolean
 	onDelete: (chatId: string) => void
 	setOpenMobile: (open: boolean) => void
+	searchQuery?: string
 }) {
 	const { visibilityType, setVisibilityType } = useChatVisibility({
 		chatId: chat.id,
@@ -524,6 +580,27 @@ function ChatItem({
 		setOpenMobile(false)
 		router.push(`/chat/${chat.id}`)
 	}
+
+	// Highlight search matches in the title
+	const highlightedTitle = React.useMemo(() => {
+		if (!searchQuery?.trim()) return chat.title
+
+		const query = searchQuery.toLowerCase().trim()
+		const title = chat.title
+		const index = title.toLowerCase().indexOf(query)
+
+		if (index === -1) return title
+
+		return (
+			<>
+				{title.substring(0, index)}
+				<mark className="bg-yellow-200 dark:bg-yellow-800 text-inherit">
+					{title.substring(index, index + query.length)}
+				</mark>
+				{title.substring(index + query.length)}
+			</>
+		)
+	}, [chat.title, searchQuery])
 
 	return (
 		<div className="group relative">
@@ -546,7 +623,7 @@ function ChatItem({
 						<Lock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
 					)}
 					<span className="truncate font-medium flex-1 min-w-0">
-						{chat.title}
+						{highlightedTitle}
 					</span>
 					<span className="text-xs text-muted-foreground flex-shrink-0">
 						{new Date(chat.createdAt).toLocaleDateString("en-US", {

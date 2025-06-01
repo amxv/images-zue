@@ -41,7 +41,9 @@ function PureMultimodalInput({
 	append,
 	handleSubmit,
 	className,
-	selectedVisibilityType
+	selectedVisibilityType,
+	onClearAttachments,
+	isArtifactVisible
 }: {
 	chatId: string
 	input: UseChatHelpers["input"]
@@ -56,9 +58,15 @@ function PureMultimodalInput({
 	handleSubmit: UseChatHelpers["handleSubmit"]
 	className?: string
 	selectedVisibilityType: VisibilityType
+	onClearAttachments?: () => void
+	isArtifactVisible?: boolean
 }) {
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 	const { width } = useWindowSize()
+
+	// Drag and drop state
+	const [isDragOver, setIsDragOver] = useState(false)
+	const [dragCounter, setDragCounter] = useState(0)
 
 	const adjustHeight = useCallback(() => {
 		if (textareaRef.current) {
@@ -115,7 +123,12 @@ function PureMultimodalInput({
 			experimental_attachments: attachments
 		})
 
-		setAttachments([])
+		// Clear attachments using the provided callback or fallback to setAttachments
+		if (onClearAttachments) {
+			onClearAttachments()
+		} else {
+			setAttachments([])
+		}
 		setLocalStorageInput("")
 		resetHeight()
 
@@ -125,6 +138,7 @@ function PureMultimodalInput({
 	}, [
 		attachments,
 		handleSubmit,
+		onClearAttachments,
 		setAttachments,
 		setLocalStorageInput,
 		width,
@@ -175,14 +189,39 @@ function PureMultimodalInput({
 		}
 	}, [])
 
-	const handleFileChange = useCallback(
-		async (event: ChangeEvent<HTMLInputElement>) => {
-			const files = Array.from(event.target.files || [])
+	const processFiles = useCallback(
+		async (files: File[]) => {
+			// Filter for image files only
+			const imageFiles = files.filter((file) =>
+				[
+					"image/jpeg",
+					"image/jpg",
+					"image/png",
+					"image/gif",
+					"image/webp",
+					"image/bmp"
+				].includes(file.type)
+			)
 
-			setUploadQueue(files.map((file) => file.name))
+			if (imageFiles.length === 0) {
+				toast.error(
+					"Please upload only image files (JPEG, PNG, GIF, WebP, BMP)"
+				)
+				return
+			}
+
+			if (imageFiles.length !== files.length) {
+				toast.error(
+					"Some files were skipped. Only image files are supported."
+				)
+			}
+
+			setUploadQueue(imageFiles.map((file) => file.name))
 
 			try {
-				const uploadPromises = files.map((file) => uploadFile(file))
+				const uploadPromises = imageFiles.map((file) =>
+					uploadFile(file)
+				)
 				const uploadedAttachments = await Promise.all(uploadPromises)
 				const successfullyUploadedAttachments =
 					uploadedAttachments.filter(
@@ -205,6 +244,96 @@ function PureMultimodalInput({
 		[setAttachments, uploadFile]
 	)
 
+	const handleFileChange = useCallback(
+		async (event: ChangeEvent<HTMLInputElement>) => {
+			const files = Array.from(event.target.files || [])
+			await processFiles(files)
+		},
+		[processFiles]
+	)
+
+	// Drag and drop handlers
+	const handleDragEnter = useCallback((e: React.DragEvent) => {
+		e.preventDefault()
+		e.stopPropagation()
+		setDragCounter((prev) => prev + 1)
+		if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+			setIsDragOver(true)
+		}
+	}, [])
+
+	const handleDragLeave = useCallback(
+		(e: React.DragEvent) => {
+			e.preventDefault()
+			e.stopPropagation()
+			setDragCounter((prev) => prev - 1)
+			if (dragCounter <= 1) {
+				setIsDragOver(false)
+			}
+		},
+		[dragCounter]
+	)
+
+	const handleDragOver = useCallback((e: React.DragEvent) => {
+		e.preventDefault()
+		e.stopPropagation()
+	}, [])
+
+	const handleDrop = useCallback(
+		async (e: React.DragEvent) => {
+			e.preventDefault()
+			e.stopPropagation()
+			setIsDragOver(false)
+			setDragCounter(0)
+
+			if (status !== "ready") {
+				toast.error("Please wait for the model to finish its response!")
+				return
+			}
+
+			const files = Array.from(e.dataTransfer.files)
+			if (files.length > 0) {
+				await processFiles(files)
+			}
+		},
+		[status, processFiles]
+	)
+
+	// Paste handler for images
+	const handlePaste = useCallback(
+		async (e: React.ClipboardEvent) => {
+			if (status !== "ready") {
+				toast.error("Please wait for the model to finish its response!")
+				return
+			}
+
+			const clipboardItems = e.clipboardData?.items
+			if (!clipboardItems) return
+
+			const files: File[] = []
+
+			// Convert clipboard items to files
+			for (let i = 0; i < clipboardItems.length; i++) {
+				const item = clipboardItems[i]
+
+				// Check if the item is an image
+				if (item.type.startsWith("image/")) {
+					const file = item.getAsFile()
+					if (file) {
+						files.push(file)
+					}
+				}
+			}
+
+			if (files.length > 0) {
+				// Prevent the default paste behavior for images
+				e.preventDefault()
+				await processFiles(files)
+			}
+		},
+		[status, processFiles]
+	)
+
 	const { isAtBottom, scrollToBottom } = useScrollToBottom()
 
 	useEffect(() => {
@@ -214,9 +343,30 @@ function PureMultimodalInput({
 	}, [status, scrollToBottom])
 
 	return (
-		<div className="relative w-full flex flex-col gap-4">
+		<div
+			className="relative w-full flex flex-col gap-4"
+			onDragEnter={handleDragEnter}
+			onDragLeave={handleDragLeave}
+			onDragOver={handleDragOver}
+			onDrop={handleDrop}
+		>
+			{/* Drag overlay */}
+			{isDragOver && (
+				<div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-sm border-2 border-dashed border-primary rounded-2xl flex items-center justify-center">
+					<div className="text-center">
+						<div className="text-lg font-medium text-primary mb-2">
+							Drop images here
+						</div>
+						<div className="text-sm text-muted-foreground">
+							Supports JPEG, PNG, GIF, WebP, BMP
+						</div>
+					</div>
+				</div>
+			)}
+
 			<AnimatePresence>
-				{!isAtBottom && (
+				{/* Show scroll to bottom button only when user is not at bottom AND artifact is not visible */}
+				{!isAtBottom && !isArtifactVisible && (
 					<motion.div
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -261,6 +411,7 @@ function PureMultimodalInput({
 				multiple
 				onChange={handleFileChange}
 				tabIndex={-1}
+				accept="image/*"
 			/>
 
 			{(attachments.length > 0 || uploadQueue.length > 0) && (
@@ -296,7 +447,10 @@ function PureMultimodalInput({
 				onChange={handleInput}
 				className={cx(
 					"min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl text-base! bg-muted pb-10 dark:border-zinc-700",
-					className
+					className,
+					{
+						"border-primary border-2": isDragOver
+					}
 				)}
 				rows={2}
 				autoFocus
@@ -317,6 +471,7 @@ function PureMultimodalInput({
 						}
 					}
 				}}
+				onPaste={handlePaste}
 			/>
 
 			<div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
@@ -351,6 +506,8 @@ export const MultimodalInput = memo(
 			prevProps.selectedVisibilityType !==
 			nextProps.selectedVisibilityType
 		)
+			return false
+		if (prevProps.isArtifactVisible !== nextProps.isArtifactVisible)
 			return false
 
 		return true
