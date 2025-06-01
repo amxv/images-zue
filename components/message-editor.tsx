@@ -28,7 +28,18 @@ export function MessageEditor({
 }: MessageEditorProps) {
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-	const [draftContent, setDraftContent] = useState<string>(message.content)
+	// Extract text content from message parts
+	const getTextContent = (message: Message) => {
+		if (message.parts) {
+			const textPart = message.parts.find((part) => part.type === "text")
+			return textPart?.text || ""
+		}
+		return message.content || ""
+	}
+
+	const [draftContent, setDraftContent] = useState<string>(
+		getTextContent(message)
+	)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
 
 	useEffect(() => {

@@ -106,7 +106,7 @@ export function Console({ consoleOutputs, setConsoleOutputs }: ConsoleProps) {
 						<div>Console</div>
 					</div>
 					<Button
-						variant="ghost"
+						variant="outline"
 						className="size-fit p-1 dark:hover:bg-zinc-700 hover:bg-zinc-200"
 						size="icon"
 						onClick={() => setConsoleOutputs([])}

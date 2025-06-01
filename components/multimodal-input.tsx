@@ -538,7 +538,7 @@ function PureAttachmentsButton({
 				fileInputRef.current?.click()
 			}}
 			disabled={status !== "ready"}
-			variant="ghost"
+			variant="outline"
 		>
 			<PaperclipIcon size={14} />
 		</Button>

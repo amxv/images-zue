@@ -4,6 +4,7 @@ import { useArtifact } from "@/hooks/use-artifact"
 import { toast } from "sonner"
 import type { ArtifactKind } from "./artifact"
 import { FileIcon, LoaderIcon, MessageIcon, PencilEditIcon } from "./icons"
+import { MessageCircle, SquarePen } from "lucide-react"
 
 const getActionText = (
 	type: "create" | "update" | "request-suggestions",
@@ -68,16 +69,16 @@ function PureDocumentToolResult({
 				})
 			}}
 		>
-			<div className="text-muted-foreground mt-1">
+			<div className="text-muted-foreground">
 				{type === "create" ? (
 					<FileIcon />
 				) : type === "update" ? (
-					<PencilEditIcon />
+					<SquarePen size={16} />
 				) : type === "request-suggestions" ? (
-					<MessageIcon />
+					<MessageCircle size={16} />
 				) : null}
 			</div>
-			<div className="text-left">
+			<div className="text-left text-xs">
 				{`${getActionText(type, "past")} "${result.title}"`}
 			</div>
 		</button>
@@ -128,13 +129,13 @@ function PureDocumentToolCall({
 			}}
 		>
 			<div className="flex flex-row gap-3 items-start">
-				<div className="text-zinc-500 mt-1">
+				<div className="text-zinc-500">
 					{type === "create" ? (
 						<FileIcon />
 					) : type === "update" ? (
-						<PencilEditIcon />
+						<SquarePen size={16} />
 					) : type === "request-suggestions" ? (
-						<MessageIcon />
+						<MessageCircle size={16} />
 					) : null}
 				</div>
 

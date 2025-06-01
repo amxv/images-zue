@@ -10,7 +10,6 @@ import { AnimatePresence, motion } from "framer-motion"
 import { memo, useState } from "react"
 import { DocumentToolCall, DocumentToolResult } from "./document"
 import { DocumentPreview } from "./document-preview"
-import { PencilEditIcon } from "./icons"
 import { Markdown } from "./markdown"
 import { ZueLogo } from "./zue-logo"
 import { MessageActions } from "./message-actions"
@@ -20,6 +19,7 @@ import { PreviewAttachment } from "./preview-attachment"
 import { Button } from "./ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
 import { Weather } from "./weather"
+import { SquarePen } from "lucide-react"
 
 const PurePreviewMessage = ({
 	chatId,
@@ -118,6 +118,30 @@ const PurePreviewMessage = ({
 												}
 											)}
 										>
+											{message.role === "user" &&
+												!isReadonly && (
+													<Tooltip>
+														<TooltipTrigger asChild>
+															<Button
+																data-testid="message-edit-button"
+																variant="outline"
+																className="px-2 h-fit rounded-full text-muted-foreground opacity-0 group-hover/message:opacity-100"
+																onClick={() => {
+																	setMode(
+																		"edit"
+																	)
+																}}
+															>
+																<SquarePen
+																	size={16}
+																/>
+															</Button>
+														</TooltipTrigger>
+														<TooltipContent>
+															Edit message
+														</TooltipContent>
+													</Tooltip>
+												)}
 											<div
 												data-testid="message-content"
 												className={cn(
@@ -133,29 +157,6 @@ const PurePreviewMessage = ({
 													{sanitizeText(part.text)}
 												</Markdown>
 											</div>
-
-											{message.role === "user" &&
-												!isReadonly && (
-													<Tooltip>
-														<TooltipTrigger asChild>
-															<Button
-																data-testid="message-edit-button"
-																variant="ghost"
-																className="px-2 h-fit rounded-full text-muted-foreground opacity-0 group-hover/message:opacity-100"
-																onClick={() => {
-																	setMode(
-																		"edit"
-																	)
-																}}
-															>
-																<PencilEditIcon />
-															</Button>
-														</TooltipTrigger>
-														<TooltipContent>
-															Edit message
-														</TooltipContent>
-													</Tooltip>
-												)}
 										</div>
 									)
 								}
