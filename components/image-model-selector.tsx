@@ -147,10 +147,12 @@ export function ImageModelSelector({
 				<Button
 					data-testid="image-model-selector"
 					variant="outline"
-					className="md:px-2 md:h-[34px]"
+					className="md:px-2 md:h-[34px] px-2"
 				>
 					<ImageIcon size={12} />
-					{selectedImageModel?.name || "Select Model"}
+					<span className="hidden md:inline">
+						{selectedImageModel?.name || "Select Model"}
+					</span>
 					<div
 						className={cn(
 							"transition-transform duration-200",

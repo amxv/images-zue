@@ -39,7 +39,9 @@ function LayoutContent({ children }: LayoutWrapperProps) {
 					session={session}
 				/>
 			)}
-			<div className="flex-1 overflow-hidden">{children}</div>
+			<div className="flex-1 overflow-hidden bg-background">
+				{children}
+			</div>
 		</div>
 	)
 }

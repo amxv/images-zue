@@ -58,10 +58,12 @@ export function ModelSelector({
 				<Button
 					data-testid="model-selector"
 					variant="outline"
-					className="md:px-2 md:h-[34px]"
+					className="md:px-2 md:h-[34px] px-2"
 				>
 					<BrainIcon size={12} />
-					{selectedChatModel?.name}
+					<span className="hidden md:inline">
+						{selectedChatModel?.name}
+					</span>
 					<div
 						className={cn(
 							"transition-transform duration-200",

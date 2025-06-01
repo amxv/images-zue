@@ -200,7 +200,7 @@ export function AppSidebar({
 	return (
 		<>
 			<Sidebar {...props}>
-				<SidebarHeader className="gap-3.5 border-b p-4">
+				<SidebarHeader className="gap-3.5 pt-4 pb-3 md:pt-5 md:pb-4 px-4">
 					<div className="relative">
 						<SidebarInput
 							placeholder="Search"
@@ -281,7 +281,7 @@ export function AppSidebar({
 													{groupedChats.today.length >
 														0 && (
 														<div>
-															<div className="px-4 py-2 text-xs font-medium text-sidebar-foreground/70 bg-sidebar-accent/50">
+															<div className="px-4 py-2 text-xs font-medium text-sidebar-foreground/70">
 																Today
 															</div>
 															{groupedChats.today.map(
@@ -324,7 +324,7 @@ export function AppSidebar({
 													{groupedChats.yesterday
 														.length > 0 && (
 														<div>
-															<div className="px-4 py-2 text-xs font-medium text-sidebar-foreground/70 bg-sidebar-accent/50">
+															<div className="px-4 py-2 text-xs font-medium text-sidebar-foreground/70">
 																Yesterday
 															</div>
 															{groupedChats.yesterday.map(
@@ -367,7 +367,7 @@ export function AppSidebar({
 													{groupedChats.lastWeek
 														.length > 0 && (
 														<div>
-															<div className="px-4 py-2 text-xs font-medium text-sidebar-foreground/70 bg-sidebar-accent/50">
+															<div className="px-4 py-2 text-xs font-medium text-sidebar-foreground/70">
 																Last 7 days
 															</div>
 															{groupedChats.lastWeek.map(
@@ -410,7 +410,7 @@ export function AppSidebar({
 													{groupedChats.lastMonth
 														.length > 0 && (
 														<div>
-															<div className="px-4 py-2 text-xs font-medium text-sidebar-foreground/70 bg-sidebar-accent/50">
+															<div className="px-4 py-2 text-xs font-medium text-sidebar-foreground/70">
 																Last 30 days
 															</div>
 															{groupedChats.lastMonth.map(
@@ -453,7 +453,7 @@ export function AppSidebar({
 													{groupedChats.older.length >
 														0 && (
 														<div>
-															<div className="px-4 py-2 text-xs font-medium text-sidebar-foreground/70 bg-sidebar-accent/50">
+															<div className="px-4 py-2 text-xs font-medium text-sidebar-foreground/70">
 																Older
 															</div>
 															{groupedChats.older.map(

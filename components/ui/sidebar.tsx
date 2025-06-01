@@ -343,7 +343,7 @@ const SidebarInput = React.forwardRef<
 	React.ComponentProps<typeof Input>
 >(({ className, ...props }, ref) => {
 	return (
-		<div className="flex items-center gap-2">
+		<div className="flex items-center gap-2 py-0.5">
 			<SearchIcon className="h-4 w-4" />
 			<Input
 				ref={ref}

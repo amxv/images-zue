@@ -436,7 +436,7 @@ const PureToolbar = ({
 						initial={{ scale: 1 }}
 						animate={{ scale: 1.2 }}
 						exit={{ scale: 1 }}
-						className="p-3 rounded-full bg-red-500 text-white"
+						className="p-3 rounded-full text-foreground"
 						onClick={() => {
 							stop()
 							setMessages((messages) => messages)

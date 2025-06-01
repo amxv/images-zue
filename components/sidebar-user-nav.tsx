@@ -35,7 +35,7 @@ export function SidebarUserNav({ user }: { user: User }) {
 				{status === "loading" ? (
 					<Button
 						variant="outline"
-						className="md:px-2 md:h-[34px] gap-2"
+						className="px-2 h-8 md:h-[34px] gap-1 md:gap-2"
 					>
 						<div className="size-4 bg-zinc-500/30 rounded-full animate-pulse" />
 						<div className="animate-spin text-zinc-500">
@@ -46,7 +46,7 @@ export function SidebarUserNav({ user }: { user: User }) {
 					<Button
 						data-testid="user-nav-button"
 						variant="outline"
-						className="md:px-2 md:h-[34px] gap-2"
+						className="px-2 h-8 md:h-[34px] gap-1 md:gap-2"
 					>
 						<Image
 							src={`https://avatar.vercel.sh/${user.email}`}

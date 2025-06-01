@@ -38,23 +38,23 @@ function PureChatHeader({
 	const { open } = useSidebar()
 
 	return (
-		<header className="flex sticky top-0 bg-background my-5 items-center px-2 md:px-4 gap-2 z-60">
+		<header className="flex sticky top-0 bg-background/95 backdrop-blur-sm pt-4 pb-3 md:pt-5 md:pb-4 items-center px-2 md:px-4 gap-1 md:gap-2 z-50">
 			{/* Left section */}
-			<div className="flex items-center gap-2">
+			<div className="flex items-center gap-1 md:gap-2">
 				<SidebarToggle />
 
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button
 							variant="outline"
-							className="md:px-2 px-2 md:h-fit"
+							className="px-2 h-8 md:h-fit"
 							onClick={() => {
 								router.push("/")
 								router.refresh()
 							}}
 						>
 							<PlusIcon />
-							<span className="md:sr-only">New Chat</span>
+							<span className="sr-only">New Chat</span>
 						</Button>
 					</TooltipTrigger>
 					<TooltipContent>New Chat</TooltipContent>
@@ -62,11 +62,12 @@ function PureChatHeader({
 			</div>
 
 			{/* Center section with model selectors - absolutely positioned */}
-			<div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
+			<div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-1 md:gap-2">
 				{!isReadonly && (
 					<ModelSelector
 						session={session}
 						selectedModelId={selectedModelId}
+						className="h-8 md:h-[34px]"
 					/>
 				)}
 
@@ -76,12 +77,13 @@ function PureChatHeader({
 						selectedImageModelId={selectedImageModelId}
 						selectedAspectRatio={selectedAspectRatio}
 						selectedGuidanceScale={selectedGuidanceScale}
+						className="h-8 md:h-[34px]"
 					/>
 				)}
 			</div>
 
 			{/* Right section with visibility selector and user nav */}
-			<div className="flex items-center gap-2 ml-auto">
+			<div className="flex items-center gap-1 md:gap-2 ml-auto">
 				{!isReadonly && (
 					<VisibilitySelector
 						chatId={chatId}

@@ -63,8 +63,12 @@ function PureSuggestedActions({
 						}}
 						className="text-center border rounded-3xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-center items-center"
 					>
-						<span className="text-md">{suggestedAction.title}</span>
-						<span className="text-md">{suggestedAction.label}</span>
+						<span className="text-md font-normal">
+							{suggestedAction.title}
+						</span>
+						<span className="text-md font-normal">
+							{suggestedAction.label}
+						</span>
 					</Button>
 				</motion.div>
 			))}
