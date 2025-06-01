@@ -4,6 +4,8 @@ import { createDocumentHandler } from "@/lib/artifacts/server"
 import { streamObject } from "ai"
 import { z } from "zod"
 
+// DISABLED: Code artifacts are no longer supported
+/*
 export const codeDocumentHandler = createDocumentHandler<"code">({
 	kind: "code",
 	onCreateDocument: async ({ title, dataStream }) => {
@@ -71,3 +73,4 @@ export const codeDocumentHandler = createDocumentHandler<"code">({
 		return draftContent
 	}
 })
+*/

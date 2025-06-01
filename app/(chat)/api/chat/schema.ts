@@ -34,7 +34,7 @@ export const postRequestBodySchema = z.object({
 	),
 	selectedVisibilityType: z.enum(["public", "private"]),
 	selectedAspectRatio: z
-		.enum(["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"])
+		.enum(["1:1", "16:9", "9:16", "4:3", "3:4"])
 		.optional()
 		.default("1:1"),
 	selectedGuidanceScale: z.number().min(1).max(20).optional().default(10)

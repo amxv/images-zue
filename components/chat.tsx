@@ -76,7 +76,9 @@ export function Chat({
 			message: body.messages.at(-1),
 			selectedChatModel: initialChatModel,
 			selectedImageModel: initialImageModel,
-			selectedVisibilityType: visibilityType
+			selectedVisibilityType: visibilityType,
+			selectedAspectRatio: initialAspectRatio,
+			selectedGuidanceScale: parseInt(initialGuidanceScale)
 		}),
 		onFinish: () => {
 			mutate(unstable_serialize(getChatHistoryPaginationKey))

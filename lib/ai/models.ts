@@ -42,16 +42,10 @@ export type ImageModelId =
 	(typeof IMAGE_MODEL_IDS)[keyof typeof IMAGE_MODEL_IDS]
 
 // Universal aspect ratio format used in UI
-export type UniversalAspectRatio =
-	| "1:1"
-	| "16:9"
-	| "9:16"
-	| "4:3"
-	| "3:4"
-	| "21:9"
+export type UniversalAspectRatio = "1:1" | "16:9" | "9:16" | "4:3" | "3:4"
 
 // Model-specific aspect ratio formats
-export type FluxAspectRatio = "1:1" | "16:9" | "9:16" | "4:3" | "3:4" | "21:9"
+export type FluxAspectRatio = "1:1" | "16:9" | "9:16" | "4:3" | "3:4"
 export type RecraftIdeogramAspectRatio =
 	| "square_hd"
 	| "square"
@@ -160,7 +154,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "flux"
 		}
@@ -182,7 +176,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "flux"
 		}
@@ -204,7 +198,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "flux"
 		}
@@ -225,7 +219,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "recraft-ideogram"
 		}
@@ -247,7 +241,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "flux"
 		}
@@ -268,7 +262,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "flux"
 		}
@@ -290,7 +284,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "recraft-ideogram"
 		}
@@ -376,7 +370,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "flux"
 		}
@@ -397,7 +391,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "flux"
 		}
@@ -418,7 +412,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "flux"
 		}
@@ -439,7 +433,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "flux"
 		}
@@ -460,7 +454,7 @@ export const imageModels: Array<ImageModel> = [
 		},
 		aspectRatio: {
 			parameterName: "aspect_ratio",
-			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4", "21:9"],
+			supportedRatios: ["1:1", "16:9", "9:16", "4:3", "3:4"],
 			defaultRatio: "1:1",
 			formatType: "flux"
 		}
@@ -510,8 +504,7 @@ export const convertUniversalToModelAspectRatio = (
 		"4:3": "landscape_4_3",
 		"3:4": "portrait_4_3",
 		"16:9": "landscape_16_9",
-		"9:16": "portrait_16_9",
-		"21:9": "landscape_16_9" // Fallback to 16:9 for ultrawide
+		"9:16": "portrait_16_9"
 	}
 
 	return recraftIdeogramMapping[universalRatio] || "square_hd"

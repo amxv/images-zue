@@ -53,7 +53,7 @@ const PurePreviewMessage = ({
 			>
 				<div
 					className={cn(
-						"flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl",
+						"flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:flex-row-reverse",
 						{
 							"w-full": mode === "edit",
 							"group-data-[role=user]/message:w-fit":
@@ -110,7 +110,13 @@ const PurePreviewMessage = ({
 									return (
 										<div
 											key={key}
-											className="flex flex-row gap-2 items-start"
+											className={cn(
+												"flex flex-row gap-2 items-start",
+												{
+													"flex-row-reverse":
+														message.role === "user"
+												}
+											)}
 										>
 											{message.role === "user" &&
 												!isReadonly && (
@@ -140,7 +146,7 @@ const PurePreviewMessage = ({
 												className={cn(
 													"flex flex-col gap-4",
 													{
-														"bg-primary text-primary-foreground px-3 py-2 rounded-3xl":
+														"bg-primary text-primary-foreground px-3 py-2 rounded-2xl":
 															message.role ===
 															"user"
 													}
@@ -306,7 +312,7 @@ export const ThinkingMessage = () => {
 		>
 			<div
 				className={cx(
-					"flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-3xl",
+					"flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-2xl",
 					{
 						"group-data-[role=user]/message:bg-muted": true
 					}

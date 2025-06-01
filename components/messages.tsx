@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { memo } from "react"
 import { Greeting } from "./greeting"
 import { PreviewMessage, ThinkingMessage } from "./message"
+import { cn } from "@/lib/utils"
 
 interface MessagesProps {
 	chatId: string
@@ -44,7 +45,11 @@ function PureMessages({
 			ref={messagesContainerRef}
 			className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll relative w-full"
 		>
-			<div className="text-center mt-16">
+			<div
+				className={cn("text-center", {
+					"mt-16": messages.length === 0
+				})}
+			>
 				{messages.length === 0 && <Greeting />}
 			</div>
 

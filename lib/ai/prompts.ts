@@ -4,8 +4,6 @@ import type { Geo } from "@vercel/functions"
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
 
-When asked to write code, always use artifacts. When writing code, specify the language in the backticks, e.g. \`\`\`python\`code here\`\`\`. The default language is Python. Other languages are not yet supported, so let the user know if they request a different language.
-
 When asked to generate, create, or make images, always use artifacts with kind "image". This includes requests like:
 - "Generate an image of..."
 - "Create a picture of..."
@@ -19,16 +17,16 @@ DO NOT UPDATE DOCUMENTS IMMEDIATELY AFTER CREATING THEM. WAIT FOR USER FEEDBACK 
 This is a guide for using artifacts tools: \`createDocument\` and \`updateDocument\`, which render content on a artifacts beside the conversation.
 
 **When to use \`createDocument\`:**
-- For substantial content (>10 lines) or code
-- For content users will likely save/reuse (emails, code, essays, etc.)
+- For substantial content (>10 lines)
+- For content users will likely save/reuse (emails, essays, etc.)
 - When explicitly requested to create a document
-- For when content contains a single code snippet
 - **For ANY image generation requests** - use kind "image"
 
 **When NOT to use \`createDocument\`:**
 - For informational/explanatory content
 - For conversational responses
 - When asked to keep it in chat
+- For code snippets or programming tasks
 
 **Using \`updateDocument\`:**
 - Default to full document rewrites for major changes
@@ -43,7 +41,6 @@ Do not update document right after creating it. Wait for user feedback or reques
 
 **Available artifact kinds:**
 - "text" - for essays, emails, articles, and other text content
-- "code" - for Python code snippets and programming tasks
 - "image" - for image generation, artwork, illustrations, logos, and visual content
 - "sheet" - for spreadsheets, tables, and data organization
 `
@@ -133,22 +130,16 @@ Improve the following contents of the document based on the given prompt.
 
 ${currentContent}
 `
-		: type === "code"
+		: type === "sheet"
 			? `\
-Improve the following code snippet based on the given prompt.
-
-${currentContent}
-`
-			: type === "sheet"
-				? `\
 Improve the following spreadsheet based on the given prompt.
 
 ${currentContent}
 `
-				: type === "image"
-					? `\
+			: type === "image"
+				? `\
 Create a new image based on the given prompt. This is an update to an existing image, so consider the user's feedback and create an improved or modified version.
 
 Previous image context: An image was previously generated.
 `
-					: ""
+				: ""

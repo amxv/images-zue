@@ -244,15 +244,7 @@ const PureDocumentHeader = ({
 	<div className="p-4 border rounded-t-2xl flex flex-row gap-2 items-start sm:items-center justify-between dark:bg-muted border-b-0 dark:border-zinc-700">
 		<div className="flex flex-row items-start sm:items-center gap-3">
 			<div className="text-muted-foreground">
-				{isStreaming ? (
-					<div className="animate-spin">
-						<LoaderIcon />
-					</div>
-				) : kind === "image" ? (
-					<ImageIcon />
-				) : (
-					<FileIcon />
-				)}
+				{kind === "image" ? <ImageIcon /> : <FileIcon />}
 			</div>
 			<div className="-translate-y-1 sm:translate-y-0 font-medium">
 				{title}
@@ -276,7 +268,7 @@ const DocumentContent = ({ document }: { document: Document }) => {
 		"h-[257px] overflow-y-scroll border rounded-b-2xl dark:bg-muted border-t-0 dark:border-zinc-700",
 		{
 			"p-4 sm:px-14 sm:py-16": document.kind === "text",
-			"p-0": document.kind === "code"
+			"p-0": document.kind === "sheet"
 		}
 	)
 
@@ -293,12 +285,6 @@ const DocumentContent = ({ document }: { document: Document }) => {
 		<div className={containerClassName}>
 			{document.kind === "text" ? (
 				<Editor {...commonProps} onSaveContent={() => {}} />
-			) : document.kind === "code" ? (
-				<div className="flex flex-1 relative w-full">
-					<div className="absolute inset-0">
-						<CodeEditor {...commonProps} onSaveContent={() => {}} />
-					</div>
-				</div>
 			) : document.kind === "sheet" ? (
 				<div className="flex flex-1 relative size-full p-4">
 					<div className="absolute inset-0">
