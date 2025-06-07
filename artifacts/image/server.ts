@@ -464,15 +464,18 @@ export const imageDocumentHandler = createDocumentHandler<"image">({
 					string,
 					string | number | boolean | string[]
 				> = {
-					// Use image_urls for multiple images, image_url for single image (backward compatibility)
-					...(imagesToUse.length > 1
+					// Special handling for multi-image models that always require image_urls
+					...(optimalModelId ===
+						IMAGE_MODEL_IDS.FLUX_KONTEXT_MAX_MULTI ||
+					optimalModelId === IMAGE_MODEL_IDS.IDEOGRAM_V3_MULTI
 						? { image_urls: imagesToUse }
-						: { image_url: imagesToUse[0] }),
+						: imagesToUse.length > 1
+							? { image_urls: imagesToUse }
+							: { image_url: imagesToUse[0] }),
 					num_inference_steps: modelParams.inferenceSteps,
 					sync_mode: true,
-					// Strength controls how much the input image influences the output
-					// Lower values preserve more of the original image
-					// Use lower strength for editing existing artifacts vs new input images
+					// Adjust strength based on whether we have a new input images
+					// Higher strength for new images, lower for modifications
 					strength: 0.8
 				}
 
@@ -623,10 +626,13 @@ export const imageDocumentHandler = createDocumentHandler<"image">({
 				string,
 				string | number | boolean | string[]
 			> = {
-				// Use image_urls for multiple images, image_url for single image (backward compatibility)
-				...(imagesToUse.length > 1
+				// Special handling for multi-image models that always require image_urls
+				...(optimalModelId === IMAGE_MODEL_IDS.FLUX_KONTEXT_MAX_MULTI ||
+				optimalModelId === IMAGE_MODEL_IDS.IDEOGRAM_V3_MULTI
 					? { image_urls: imagesToUse }
-					: { image_url: imagesToUse[0] }),
+					: imagesToUse.length > 1
+						? { image_urls: imagesToUse }
+						: { image_url: imagesToUse[0] }),
 				num_inference_steps: modelParams.inferenceSteps,
 				sync_mode: true,
 				// Adjust strength based on whether we have a new input images
