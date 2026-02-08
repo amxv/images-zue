@@ -91,7 +91,7 @@ export function AppSidebar({
 					<div className="flex flex-row justify-between items-center">
 						<div
 							onClick={() => {
-								router.push("/")
+								router.push("/generate")
 								setOpen(false)
 							}}
 							className="flex flex-row gap-3 items-center"
@@ -247,7 +247,7 @@ export function AppSidebar({
 							<DropdownMenuItem
 								className="cursor-pointer"
 								onClick={() => {
-									router.push("/")
+									router.push("/generate")
 								}}
 							>
 								Dashboard

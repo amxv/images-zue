@@ -1,7 +1,5 @@
 import { ThemeProvider } from "@/components/theme-provider"
-import { LayoutWrapper } from "@/components/layout-wrapper"
-import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { ConditionalSidebar } from "@/components/conditional-sidebar"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Toaster } from "sonner"
@@ -91,12 +89,12 @@ export default async function RootLayout({
 					<Toaster position="top-center" />
 					<GenerationDetailsDialogProvider>
 						<SessionProvider>
-							<SidebarProvider defaultOpen={!isCollapsed}>
-								<AppSidebar user={session?.user} />
-								<SidebarInset>
-									<LayoutWrapper>{children}</LayoutWrapper>
-								</SidebarInset>
-							</SidebarProvider>
+							<ConditionalSidebar
+								user={session?.user}
+								isCollapsed={isCollapsed}
+							>
+								{children}
+							</ConditionalSidebar>
 						</SessionProvider>
 					</GenerationDetailsDialogProvider>
 				</ThemeProvider>

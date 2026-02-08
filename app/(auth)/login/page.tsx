@@ -42,7 +42,7 @@ export default function Page() {
 		} else if (state.status === "success") {
 			setIsSuccessful(true)
 			updateSession()
-			router.push("/")
+			router.push("/generate")
 		}
 	}, [state.status, updateSession, router])
 

@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
 	// Redirect all unauthenticated users to login page
 	if (!token) {
 		// Allow access to login and register pages for unauthenticated users
-		if (["/login", "/register"].includes(pathname)) {
+		if (["/", "/login", "/register"].includes(pathname)) {
 			return NextResponse.next()
 		}
 
@@ -36,7 +36,7 @@ export async function middleware(request: NextRequest) {
 	const isGuest = guestRegex.test(token?.email ?? "")
 
 	if (token && !isGuest && ["/login", "/register"].includes(pathname)) {
-		return NextResponse.redirect(new URL("/", request.url))
+		return NextResponse.redirect(new URL("/generate", request.url))
 	}
 
 	return NextResponse.next()
